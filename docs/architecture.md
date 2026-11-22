@@ -22,6 +22,13 @@ Phase 0 はブラウザで動く静的フロントエンドで、トップ画面
 - `docs/` に仕様、設計、進捗、判断の経緯を置く。
 - `dist/` はビルド成果物の出力先で、Git 管理対象から除外する。
 
+## 公開構成
+
+- Vite の `base` を `/code-reading-lab/` に設定し、公開先のサブパスから JavaScript、CSS、ファビコンを読み込む。
+- `.github/workflows/deploy.yml` は `main` への push または `main` の手動実行を受け、Node.js 24 で `npm ci` と `npm run build` を実行する。`dist/` を Pages 用アーティファクトとして渡し、`github-pages` 環境にデプロイする。ビルドは読み取り権限、デプロイは Pages 書き込みと OIDC トークンの発行権限を持つ。
+- リポジトリの Pages ソースには **GitHub Actions** を指定する。公開先は <https://junewas.github.io/code-reading-lab/>。
+- 読解画面のハッシュルート（`#/`、`#/problems/<id>`）は、ブラウザが同じ `/code-reading-lab/` の HTML を取得した後に処理する。静的配信側で URL の書き換えは不要。
+
 ## 問題データの構造と管理方式
 
 - `src/data/problems.js` に JavaScript の問題オブジェクトの配列を実装し、`problems` として名前付きでエクスポートしている。Vue の表示コンポーネントからの読み込みは一覧の実装時に行う。問題の追加・修正は GitHub の Pull Request でレビューする。データベースや API は導入しない。
