@@ -146,3 +146,28 @@ h1 { font-size: clamp(1.85rem, 4.3vw, 3.55rem); line-height: 1.25; letter-spacin
 
 .filter-groups .filters { margin-bottom: 0; }
 .filter-groups legend { margin-bottom: .35rem; color: var(--muted); font-size: .85rem; font-weight: 650; }
+
+.card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .45rem;
+  width: 100%;
+  margin-top: auto;
+}
+
+.progress-status {
+  padding: .15rem .55rem;
+  border-radius: .4rem;
+  background: #edf1ed;
+  color: #40554a;
+  font-size: .8rem;
+  font-weight: 700;
+}
+
+.progress-status.attempted { background: #fbefce; color: #694a16; }
+.progress-status.solved { background: #e1f3e8; color: #215840; }
+.storage-warning, .storage-notice { margin-bottom: 1rem; padding: .7rem 1rem; border-radius: .5rem; }
+.storage-warning { background: #fff1ea; color: #743b2d; }
+.storage-notice { background: #eaf7ef; color: #215840; }

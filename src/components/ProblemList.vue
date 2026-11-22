@@ -1,8 +1,13 @@
 <script setup>
 import { computed } from 'vue'
 import ProblemMetadata from './ProblemMetadata.vue'
+import { getProblemStatus } from '../lib/learningProgress.js'
 
-const props = defineProps({ problems: { type: Array, required: true } })
+const props = defineProps({
+  problems: { type: Array, required: true },
+  history: { type: Object, required: true },
+})
+const statusLabels = { unattempted: '未挑戦', attempted: '挑戦中', solved: '正解済み' }
 const language = defineModel({ type: String, required: true })
 const problemType = defineModel('problemType', { type: String, required: true })
 const languages = [
@@ -18,7 +23,7 @@ const types = [
 const visibleProblems = computed(() => props.problems.filter(
   problem => (language.value === 'all' || problem.language === language.value)
     && (problemType.value === 'all' || problem.type === problemType.value),
-))
+).map(problem => ({ ...problem, status: getProblemStatus(props.history, problem.id) })))
 </script>
 
 <template>
@@ -27,6 +32,8 @@ const visibleProblems = computed(() => props.problems.filter(
     <h1 tabindex="-1">コードを読み、<br class="mobile-break" />バグを直す。</h1>
     <p>コードの実行結果を予測したり、業務ロジックのバグを直したりしてみましょう。</p>
   </section>
+
+  <slot />
 
   <section class="problem-section" aria-labelledby="problem-list-heading">
     <div class="list-heading">
@@ -55,7 +62,10 @@ const visibleProblems = computed(() => props.problems.filter(
         <a class="problem-card" :href="'#/problems/' + encodeURIComponent(problem.id)">
           <ProblemMetadata :problem="problem" />
           <h3>{{ problem.title }}</h3>
-          <span class="card-action">問題を解く <span aria-hidden="true">→</span></span>
+          <div class="card-footer">
+            <span class="card-action">問題を解く <span aria-hidden="true">→</span></span>
+            <span class="progress-status" :class="problem.status">{{ statusLabels[problem.status] }}</span>
+          </div>
         </a>
       </li>
     </ul>
