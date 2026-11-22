@@ -27,6 +27,16 @@ npm run preview
 
 ビルド成果物は `dist/` に生成されます。`npm run preview` でビルド済み画面をローカルで確認できます。
 
+## GitHub Pages への公開
+
+公開先は <https://junewas.github.io/code-reading-lab/> です。
+
+1. GitHub のリポジトリで **Settings → Pages → Build and deployment → Source** に **GitHub Actions** を選択します。
+2. デプロイ設定の Pull Request を `main` にマージします。`main` への push で **Deploy to GitHub Pages** が起動し、`dist/` を公開します。
+3. **Actions** でデプロイ結果を確認し、公開先をブラウザで開きます。手動で再実行する場合は、同ワークフローの **Run workflow** で `main` を選択します。
+
+ローカルのビルド済みサイトは `npm run preview` が表示する `/code-reading-lab/` 付きの URL で確認できます。
+
 ## 演習の操作方法
 
 1. 問題一覧で「すべて」「Java」「JavaScript」を選び、問題を開きます。

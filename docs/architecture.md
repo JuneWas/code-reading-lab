@@ -36,6 +36,13 @@
 
 一覧の URL は `#/`、詳細は `#/problems/<id>` とする。ブラウザの履歴操作と詳細への直接アクセスに対応する。選択と回答結果は詳細画面を開いている間だけ保持する。Highlight.js には Java と JavaScript の文法を登録し、ソースをエスケープしたハイライト結果を描画する。学習用コードの実行処理は持たない。
 
+## 公開構成
+
+- Vite の `base` を `/code-reading-lab/` に設定し、公開先のサブパスから JavaScript、CSS、ファビコンを読み込む。
+- `.github/workflows/deploy.yml` は `main` への push または `main` の手動実行を受け、Node.js 24 で `npm ci` と `npm run build` を実行する。`dist/` を Pages 用アーティファクトとして渡し、`github-pages` 環境にデプロイする。ビルドは読み取り権限、デプロイは Pages 書き込みと OIDC トークンの発行権限を持つ。
+- リポジトリの Pages ソースには **GitHub Actions** を指定する。公開先は <https://junewas.github.io/code-reading-lab/>。
+- 読解画面のハッシュルート（`#/`、`#/problems/<id>`）は、ブラウザが同じ `/code-reading-lab/` の HTML を取得した後に処理する。静的配信側で URL の書き換えは不要。
+
 ## 問題データの構造と管理方式
 
 - `src/data/problems.js` に JavaScript の問題オブジェクトの配列を実装し、`problems` として名前付きでエクスポートしている。`App.vue` で読み込み、一覧と詳細にデータを渡す。問題の追加・修正は GitHub の Pull Request でレビューする。データベースや API は導入しない。
