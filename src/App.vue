@@ -2,13 +2,14 @@
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import ProblemList from './components/ProblemList.vue'
 import ReadingExercise from './components/ReadingExercise.vue'
+import WritingExercise from './components/WritingExercise.vue'
 import { problems } from './data/problems.js'
 
-const readingProblems = problems.filter(({ type }) => type === 'reading')
 const route = ref(window.location.hash)
 const language = ref('all')
+const problemType = ref('all')
 const main = ref(null)
-const activeProblem = computed(() => readingProblems.find(
+const activeProblem = computed(() => problems.find(
   ({ id }) => route.value === '#/problems/' + encodeURIComponent(id),
 ))
 const isList = computed(() => ['', '#/'].includes(route.value))
@@ -35,8 +36,9 @@ onUnmounted(() => window.removeEventListener('hashchange', updateRoute))
   </header>
 
   <main ref="main" class="shell main-content">
-    <ReadingExercise v-if="activeProblem" :key="activeProblem.id" :problem="activeProblem" />
-    <ProblemList v-else-if="isList" v-model="language" :problems="readingProblems" />
+    <WritingExercise v-if="activeProblem?.type === 'writing'" :key="activeProblem.id" :problem="activeProblem" />
+    <ReadingExercise v-else-if="activeProblem" :key="activeProblem.id" :problem="activeProblem" />
+    <ProblemList v-else-if="isList" v-model="language" v-model:problem-type="problemType" :problems="problems" />
     <section v-else class="intro">
       <h1 tabindex="-1">問題が見つかりません</h1>
       <a class="back-link" href="#/">問題一覧へ戻る</a>

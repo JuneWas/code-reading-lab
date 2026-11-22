@@ -2,7 +2,7 @@
 
 ## 現在の構成
 
-ブラウザで動く静的フロントエンドに、問題一覧とコードリーディング演習を実装済み。Vite が `index.html` を起点に `src/main.js` を読み込み、Vue が `src/App.vue` をマウントする。開発時は Vite の開発サーバーを使い、配布用ビルドは `dist/` に出力する。
+ブラウザで動く静的フロントエンドに、問題一覧、コードリーディング演習、コードライティング演習を実装済み。Vite が `index.html` を起点に `src/main.js` を読み込み、Vue が `src/App.vue` をマウントする。開発時は Vite の開発サーバーを使い、配布用ビルドは `dist/` に出力する。
 
 ## 技術選定
 
@@ -13,6 +13,8 @@
 | Vite | 開発サーバーと静的ビルドを共通の設定で利用できる。 |
 | CSS | 画面のレスポンシブレイアウトと配色を標準機能で実装できる。 |
 | Highlight.js | Java と JavaScript のソースを表示用に色分けできる。 |
+| CodeMirror 6 | ライティング用に Java・JavaScript の色分け、行番号、編集履歴を提供する。 |
+| Lezer | 実行せずに Java・JavaScript の構文を解析する。 |
 | npm、GitHub | 依存関係をロックファイルで再現でき、Pull Request でコードと文書を一緒にレビューできる。 |
 
 ## ディレクトリ設計
@@ -27,9 +29,12 @@
 
 | ファイル | 役割 |
 | --- | --- |
-| `src/App.vue` | 静的データから読解問題を取得し、URL ハッシュで一覧と詳細を切り替える。一覧の言語フィルターも保持する。 |
-| `src/components/ProblemList.vue` | 言語フィルターと問題一覧を表示する。 |
+| `src/App.vue` | URL ハッシュで一覧と問題タイプに応じた詳細を切り替える。言語と問題タイプのフィルターを保持する。 |
+| `src/components/ProblemList.vue` | 言語・問題タイプのフィルターと問題一覧を表示する。 |
 | `src/components/ReadingExercise.vue` | 問題文・選択肢・結果を表示し、選択と送信の状態を持つ。問題 ID をキーとして詳細を再生成する。 |
+| `src/components/WritingExercise.vue` | 問題文、編集内容、判定結果を管理する。リセットで初期コードを復元する。 |
+| `src/components/CodeEditor.vue` | 1 ファイルを編集する CodeMirror インスタンスを管理し、変更を親に通知する。ライティング画面で遅延読み込みする。 |
+| `src/lib/gradeWritingAnswer.js` | 問題データと提出ファイル配列を受け取り、構文照合の結果を返す。Vue や DOM に依存しない。 |
 | `src/components/ProblemMetadata.vue` | 言語・難易度・カテゴリー・問題タイプを表示する。 |
 | `src/components/CodeBlock.vue` | 受け取った 1 ファイルを表示し、Highlight.js で色分けする。 |
 | `src/lib/gradeReadingAnswer.js` | 選択肢 ID から正誤と正解を返す。DOM や Vue に依存しない。 |
@@ -41,14 +46,14 @@
 - Vite の `base` を `/code-reading-lab/` に設定し、公開先のサブパスから JavaScript、CSS、ファビコンを読み込む。
 - `.github/workflows/deploy.yml` は `main` への push または `main` の手動実行を受け、Node.js 24 で `npm ci` と `npm run build` を実行する。`dist/` を Pages 用アーティファクトとして渡し、`github-pages` 環境にデプロイする。ビルドは読み取り権限、デプロイは Pages 書き込みと OIDC トークンの発行権限を持つ。
 - リポジトリの Pages ソースには **GitHub Actions** を指定する。公開先は <https://junewas.github.io/code-reading-lab/>。
-- 読解画面のハッシュルート（`#/`、`#/problems/<id>`）は、ブラウザが同じ `/code-reading-lab/` の HTML を取得した後に処理する。静的配信側で URL の書き換えは不要。
+- 演習画面のハッシュルート（`#/`、`#/problems/<id>`）は、ブラウザが同じ `/code-reading-lab/` の HTML を取得した後に処理する。静的配信側で URL の書き換えは不要。
 
 ## 問題データの構造と管理方式
 
 - `src/data/problems.js` に JavaScript の問題オブジェクトの配列を実装し、`problems` として名前付きでエクスポートしている。`App.vue` で読み込み、一覧と詳細にデータを渡す。問題の追加・修正は GitHub の Pull Request でレビューする。データベースや API は導入しない。
 - 項目の型と必須条件は [データ要件](requirements.md#学習問題のデータ要件) に従う。一覧は `id`、`language`、`category`、`difficulty`、`type`、`title` を使い、詳細表示は `prompt` と `files` を使う。問題 ID は一覧のキーとして使い、将来の進捗保存でも同じ ID を参照する。
 - `type` が `reading` の場合は、選択された ID と `correctChoiceId` を比較して正誤を判定する。`choices` の並び順は表示に使い、ID は翻訳や並べ替えで変わらない値にする。
-- `type` が `writing` の場合は、`files` の修正前コード、`prompt` の達成条件、`explanation` を共通項目として使う。判定方式と専用項目は Phase 3 で決める。読解問題のデータ形式はそのまま使える。
+- `type` が `writing` の場合は、`files` の修正前コード、`prompt` の達成条件、`explanation` を共通項目として使う。`referenceEdit` を初期コードに適用して参照解答を組み立てる。読解問題のデータ形式は従来どおり。
 - ソースは MVP でも `files` 配列として持ち、先頭の 1 件を表示する。複数ファイル対応時は、配列順に問題内パスを並べて切り替える。同じファイル名でもディレクトリが異なれば区別できる。
 
 ## 読解問題のサンプル
@@ -109,5 +114,5 @@ console.log(JSON.stringify(values.map((value) => value * 2)));`,
 
 ## 将来の拡張方針（予定）
 
-- ライティング画面に必要な依存ライブラリは、その機能の実装時に選定する。
+- ライティング判定は Lezer の構文木とトークンを参照解答と比較する。構文エラー、対象ファイルの相違、指定以外の変更は不合格とする。実行に基づく評価を将来追加する場合は、隔離した実行環境と自動テストを別途用意し、提出ファイル配列を受け取る判定処理を差し替える。複数ファイル対応時はエディタのファイル切り替えと判定対象を拡張する。
 - 学習進捗はブラウザ内に保存する。保存形式は進捗機能の実装時に決定する。

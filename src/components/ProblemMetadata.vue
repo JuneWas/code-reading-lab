@@ -10,6 +10,6 @@ const difficultyNames = { beginner: '初級', intermediate: '中級', advanced: 
     <li class="language-badge" :class="problem.language">{{ languageNames[problem.language] }}</li>
     <li>{{ difficultyNames[problem.difficulty] }}</li>
     <li>{{ problem.category }}</li>
-    <li>コード読解</li>
+    <li>{{ problem.type === 'writing' ? 'コード修正' : 'コード読解' }}</li>
   </ul>
 </template>
