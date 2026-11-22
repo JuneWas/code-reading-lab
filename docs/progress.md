@@ -2,7 +2,7 @@
 
 ## 現在のフェーズ
 
-Phase 1 Step 2（学習問題の静的データ実装）が完了。Phase 0 の初期画面は実装・検証済み。
+Phase 1 Step 2（学習問題の静的データ実装）が完了。Phase 0 の初期画面は実装・検証済み。GitHub Pages の自動デプロイ設定を実装した。
 
 ## 完了した作業
 
@@ -12,6 +12,8 @@ Phase 1 Step 2（学習問題の静的データ実装）が完了。Phase 0 の�
 - Phase 1 Step 1 で、問題の共通項目と読解専用項目、静的データの管理方式、ライティング・複数ファイルへの拡張方針を定義した。Java と JavaScript の読解例を各 1 問記載した。
 
 - Phase 1 Step 2 で、Java と JavaScript の読解問題を各 1 問 `src/data/problems.js` に登録し、`problems` を名前付きでエクスポートした。
+
+- 公開用の Vite ベースパスと GitHub Actions ワークフローを追加した。
 
 ## 未完了の作業・未解決事項
 
@@ -39,9 +41,16 @@ Phase 1 Step 2（学習問題の静的データ実装）が完了。Phase 0 の�
 - Node.js 24.22.3 で `problems` を名前付きインポートできた。設計例と一致し、Java と JavaScript の読解問題が各 1 問あること、必須項目・許容値・`files` の構造、問題 ID と問題内の選択肢 ID の一意性、`correctChoiceId` の参照先を確認した。
 - `npm ci`、`npm run build`、`git diff --check` が成功した。トップ画面のソースに差分がないことを確認した。画面テストは今回未実施。
 
+### GitHub Pages
+
+- Node.js 24.22.3 で `npm ci` と `npm run build` が成功した。`dist/index.html` の JavaScript、CSS、ファビコンが `/code-reading-lab/` 配下を参照し、各ファイルが存在することを確認した。
+- ワークフロー YAML を読み込み、トリガー、ジョブ依存、デプロイ権限、並行実行設定を確認した。
+- 読解画面ブランチ `feature/reading-practice` に同じベースパス設定を一時適用し、Chromium の幅 1440px と 390px で一覧・詳細のハッシュ遷移、詳細の再読み込み、回答まで確認した。
+- GitHub API へのアクセスが拒否されたため、リポジトリの Pages 設定、GitHub Actions の実行結果、公開サイトは未確認。
+
 ## 次のステップ
 
-Phase 1 Step 3 として、`problems` を読み込み、登録済みの 2 問のタイトル・言語・カテゴリー・難易度・タイプを表示する問題一覧を実装する。
+Pages のソースを **GitHub Actions** に設定し、デプロイ設定を `main` に取り込んだ後、Actions の結果と公開 URL の表示を確認する。
 
 ## 再開用プロンプト
 
