@@ -1,0 +1,41 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #192f26;
+  background: #f6f7f2;
+  font-synthesis: none;
+}
+
+body {
+  margin: 0;
+}
+
+.intro {
+  box-sizing: border-box;
+  display: grid;
+  min-height: 100vh;
+  min-height: 100svh;
+  align-content: center;
+  justify-items: start;
+  gap: 1.25rem;
+  max-width: 66rem;
+  margin-inline: auto;
+  padding: 3rem clamp(1.5rem, 7vw, 6rem);
+}
+
+h1 {
+  max-width: 12ch;
+  margin: 0;
+  padding-top: 1.5rem;
+  border-top: 0.25rem solid #287052;
+  font-size: clamp(2.75rem, 8vw, 6rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+p {
+  max-width: 35ch;
+  margin: 0;
+  color: #405b50;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  line-height: 1.8;
+}
