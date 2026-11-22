@@ -22,17 +22,17 @@ Phase 0 はブラウザで動く静的フロントエンドで、トップ画面
 - `docs/` に仕様、設計、進捗、判断の経緯を置く。
 - `dist/` はビルド成果物の出力先で、Git 管理対象から除外する。
 
-## 問題データの構造と管理方式（設計済み・未実装）
+## 問題データの構造と管理方式
 
-- `src/data/problems.js` に JavaScript の問題オブジェクトの配列を置き、名前付きエクスポート `problems` を Vue の表示コンポーネントから読み込む。問題の追加・修正は GitHub の Pull Request でレビューする。データベースや API は導入しない。
-- 項目の型と必須条件は [データ要件](requirements.md#学習問題のデータ要件設計済み未実装) に従う。一覧は `id`、`language`、`category`、`difficulty`、`type`、`title` を使い、詳細表示は `prompt` と `files` を使う。問題 ID は一覧のキーとして使い、将来の進捗保存でも同じ ID を参照する。
+- `src/data/problems.js` に JavaScript の問題オブジェクトの配列を実装し、`problems` として名前付きでエクスポートしている。Vue の表示コンポーネントからの読み込みは一覧の実装時に行う。問題の追加・修正は GitHub の Pull Request でレビューする。データベースや API は導入しない。
+- 項目の型と必須条件は [データ要件](requirements.md#学習問題のデータ要件) に従う。実装予定の一覧は `id`、`language`、`category`、`difficulty`、`type`、`title` を使い、詳細表示は `prompt` と `files` を使う。問題 ID は一覧のキーとして使い、将来の進捗保存でも同じ ID を参照する。
 - `type` が `reading` の場合は、選択された ID と `correctChoiceId` を比較して正誤を判定する。`choices` の並び順は表示に使い、ID は翻訳や並べ替えで変わらない値にする。
 - `type` が `writing` の場合は、`files` の修正前コード、`prompt` の達成条件、`explanation` を共通項目として使う。判定方式と専用項目は Phase 3 で決める。読解問題のデータ形式はそのまま使える。
 - ソースは MVP でも `files` 配列として持ち、先頭の 1 件を表示する。複数ファイル対応時は、配列順に問題内パスを並べて切り替える。同じファイル名でもディレクトリが異なれば区別できる。
 
 ## 読解問題のサンプル
 
-以下は設計例。アプリの問題データとして登録するのは次のステップで行う。
+以下は [実装済みの静的データ](../src/data/problems.js) に登録した Java と JavaScript の読解問題各 1 問。
 
 ```js
 export const problems = [
