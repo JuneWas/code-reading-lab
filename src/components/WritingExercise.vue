@@ -6,6 +6,7 @@ import ProblemMetadata from './ProblemMetadata.vue'
 const CodeEditor = defineAsyncComponent(() => import('./CodeEditor.vue'))
 
 const props = defineProps({ problem: { type: Object, required: true } })
+const emit = defineEmits(['attempt'])
 const starter = props.problem.files[0]
 const source = ref(starter.content)
 const result = ref(null)
@@ -23,6 +24,7 @@ function resetSource() {
 
 function submitAnswer() {
   result.value = gradeWritingAnswer(props.problem, [{ path: starter.path, content: source.value }])
+  emit('attempt', props.problem.id, result.value.isCorrect)
 }
 </script>
 

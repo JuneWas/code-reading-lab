@@ -5,12 +5,14 @@ import CodeBlock from './CodeBlock.vue'
 import ProblemMetadata from './ProblemMetadata.vue'
 
 const props = defineProps({ problem: { type: Object, required: true } })
+const emit = defineEmits(['attempt'])
 const selectedChoiceId = ref('')
 const result = ref(null)
 
 function submitAnswer() {
   if (result.value) return
   result.value = gradeReadingAnswer(props.problem, selectedChoiceId.value)
+  if (result.value) emit('attempt', props.problem.id, result.value.isCorrect)
 }
 </script>
 
